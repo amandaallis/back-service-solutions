@@ -1,0 +1,29 @@
+{
+  "name": "service-solutions",
+  "version": "1.0.0",
+  "description": "O app que conecta você com serviços de qualidade e confiança",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.9.1",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "eslint": "^7.32.0 || ^8.2.0",
+    "express": "4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "prisma": "^5.9.1",
+    "zod": "^3.22.4"
+  },
+  "author": "Amanda Allis <amandaallis70@gmail.com>",
+  "devDependencies": {
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.5"
+  }
+}

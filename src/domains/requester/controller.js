@@ -1,0 +1,52 @@
+import bcrypt from 'bcrypt';
+import prisma from "../../database/prisma.js";
+import { userSchema } from './validators.js';
+import  validateCPF  from '../../helpers/validateCPF.js';
+import { z } from 'zod';
+
+const registerNewRequester = async (request, response) => {
+    try {
+        const { name, rg, cpf, phone, password, email } = userSchema.parse(request.body);
+
+        const existEmailRegistered = await findRequesterByEmail(email);
+        
+        if(existEmailRegistered) {
+            if(!email) {
+                return response.status(401).json( {error: 'Invalid Email.'});
+            }
+            return response.status(401).json( {error: 'E-mail already registered.'});
+        }
+        if(cpf && !validateCPF(cpf)) {
+            return response.status(401).json({error: 'CPF is invalid'})
+        }
+        const hashedPassword = bcrypt.hashSync(password, 15);
+
+        const newRequester = await prisma.requester.create({
+            data: {
+                name, email, password: hashedPassword, rg, cpf, phone
+            }
+        })
+        delete newRequester.password
+        response.status(201).json({
+            newRequester,
+          });
+    } catch(error) {
+        if (error instanceof z.ZodError) {
+            return response.status(422).json({
+              message: error.errors,
+            });
+          }
+        return response.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const findRequesterByEmail = ((email) => prisma.requester.findFirst({
+        where: {
+            email
+        }
+    }));
+
+export default {
+    registerNewRequester,
+    findRequesterByEmail
+};
