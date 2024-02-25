@@ -1,8 +1,9 @@
 import bcrypt from 'bcrypt';
 import prisma from "../../database/prisma.js";
-import { userSchema } from './validators.js';
+import { loginSchema, userSchema } from './validators.js';
 import  validateCPF  from '../../helpers/validateCPF.js';
 import { z } from 'zod';
+import jwt from "jsonwebtoken"
 
 const registerNewRequester = async (request, response) => {
     try {
@@ -40,6 +41,31 @@ const registerNewRequester = async (request, response) => {
     }
 }
 
+const loginRequester = async (request, response) => {
+    try {
+        const {email, password} = loginSchema.parse(request.body);
+        const requester = await findRequesterByEmail(email);
+        if(!requester) {
+            return response.status(404).json({ error: 'Wrong data, try again' });
+        }
+        const isSamePassword = bcrypt.compareSync(password, requester.password);
+        if(!isSamePassword) {
+            return response.status(404).json({ error: 'Wrong data, try again' });
+        }
+        const token = jwt.sign(
+            {
+              requesterId: requester.id,
+            },
+            process.env.SECRET
+          );
+          response.json({
+            token,
+          });
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 const findRequesterByEmail = ((email) => prisma.requester.findFirst({
         where: {
             email
@@ -48,5 +74,6 @@ const findRequesterByEmail = ((email) => prisma.requester.findFirst({
 
 export default {
     registerNewRequester,
-    findRequesterByEmail
+    findRequesterByEmail,
+    loginRequester
 };
