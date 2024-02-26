@@ -22,10 +22,16 @@ model requester {
 }
 
 model type_service_list {
-  id          Int       @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   nameService String
-  Provider    provider? @relation(fields: [providerId], references: [id])
+  Provider    provider?     @relation(fields: [providerId], references: [id])
   providerId  Int?
+  status      statusService
+}
+
+enum statusService {
+  ON
+  OFF
 }
 
 model provider {

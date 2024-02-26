@@ -1,7 +1,8 @@
+import { z } from "zod";
 import prisma from "../../database/prisma.js";
 import validateCPF from "../../helpers/validateCPF.js";
-import { loginSchema, userSchema } from "./validators.js";
-import bcypt from "bcrypt";
+import { loginSchema, userSchema, userUpdateSchema } from "./validators.js";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const registerNewProvider = async (request, response) => {
@@ -71,7 +72,63 @@ const findProviderByEmail = ((email) => prisma.provider.findFirst({
     }
 }));
 
+const findProviderById = ((id) => prisma.provider.findFirst({
+   where: {
+    id
+   } 
+}))
+const getIdByProvider = (tokenJWT) => {
+    const token = tokenJWT.split(" ")[1];    
+    const decodedToken = jwt.decode(token);
+    if (decodedToken && decodedToken.providerId !== undefined) {
+        const providerId = decodedToken.providerId;
+        return providerId;
+    }
+    return;
+}
+
+const updateProviderData = async (request, response) => {
+    try {
+        const { name, phone, password } = userUpdateSchema.parse(request.body);
+        const tokenJWT = request.headers.authorization;
+        const providerId = getIdByProvider(tokenJWT);
+
+        if (!providerId) {
+            return response.status(401).json();
+        }
+
+        let updatedProvider = {};
+
+        if (name) {
+            updatedProvider.name = name;
+        }
+
+        if (phone) {
+            updatedProvider.phone = phone;
+        }
+
+        if (password) {
+            updatedProvider.password = bcrypt.hashSync(password, 15);
+        }
+
+        await prisma.provider.update({
+            where: { id: providerId },
+            data: updatedProvider,
+        });
+
+        return response.status(200).json();
+
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return response.status(422).json({
+                message: error.errors,
+            });
+        }
+        return response.status(500).json({ error: error.message });
+    }
+}
 export default {
     registerNewProvider,
-    loginProvider
+    loginProvider,
+    updateProviderData
 }
