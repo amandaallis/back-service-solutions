@@ -72,11 +72,6 @@ const findProviderByEmail = ((email) => prisma.provider.findFirst({
     }
 }));
 
-const findProviderById = ((id) => prisma.provider.findFirst({
-   where: {
-    id
-   } 
-}))
 const getIdByProvider = (tokenJWT) => {
     const token = tokenJWT.split(" ")[1];    
     const decodedToken = jwt.decode(token);
