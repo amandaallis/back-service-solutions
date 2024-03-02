@@ -48,7 +48,7 @@ const loginProvider = async (request, response) => {
         if(!provider) {
             return response.status(404).json({ error: 'Wrong data, try again' });
         }
-        const isSamePassword = bcypt.compareSync(password, provider.password);
+        const isSamePassword = bcrypt.compareSync(password, provider.password);
         if(!isSamePassword) {
             return response.status(404).json({ error: 'Wrong data, try again' });
         }

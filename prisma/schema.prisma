@@ -27,6 +27,14 @@ model type_service_list {
   Provider    provider?     @relation(fields: [providerId], references: [id])
   providerId  Int?
   status      statusService
+  service     service_list? @relation(fields: [serviceId], references: [id])
+  serviceId   Int?
+}
+
+model service_list {
+  id               Int                 @id @default(autoincrement())
+  service          String
+  typeServiceLists type_service_list[]
 }
 
 enum statusService {
