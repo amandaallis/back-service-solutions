@@ -12,6 +12,10 @@ server.use(requesterRouter);
 server.use(providerRouter);
 server.use(serviceTypeRouter)
 
+server.get("/teste", (request, response) => {
+    response.json({mensage: "teste"})
+})
+
 server.listen(port, () => {
     console.log("Server is running on port ", port);
 });
