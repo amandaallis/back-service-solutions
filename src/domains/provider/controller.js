@@ -6,10 +6,18 @@ import jwt from "jsonwebtoken";
 
 const registerNewProvider = async (request, response) => {
     try {
+        console.log('====================================');
+        console.log("Entrou");
+        console.log('====================================');
         const type = request.query.type
+        console.log(type);
 
-        const { email, phone, password } = userSchema.parse(request.body);
+//        const { email, phone, password } = userSchema.parse(request.body);
+        const { email, phone, password } = request.body;
 
+        console.log('====================================');
+        console.log(email, phone, password);
+        console.log('====================================');
         const existEmailRegistered = await findProviderByEmail(email);
         const existPhoneRegistered = await findProviderByPhone(phone)
         
@@ -45,8 +53,12 @@ const registerNewProvider = async (request, response) => {
                 }
             });
         } else if (type === "legal") {
-            const { cnpj, companyName } = providerLegalSchema.parse(request.body);
+            console.log("Chegou nessa parte do legal")
+//            const { cnpj, companyName } = providerLegalSchema.parse(request.body);
+            const { cnpj, companyName } = request.body;
+            console.log("passou do zod")
             const hashedPassword = bcrypt.hashSync(password, 15);
+            console.log(hashedPassword)
 
             newProvider = await prisma.provider.create({
                 data: {
@@ -69,7 +81,8 @@ const registerNewProvider = async (request, response) => {
         }
         
         delete newProvider.password;
-        
+        console.log("salvou")
+
         response.status(201).json({
             newProvider,
         });
@@ -86,9 +99,12 @@ const registerNewProvider = async (request, response) => {
 
 const loginProvider = async (request, response) => {
     try {
-        const {phone, password} = loginSchema.parse(request.body);
+//        const {password, phone} = loginSchema.parse(request.body);
+        const {password, phone} = request.body;
+        console.log({password, phone})
 
         const provider = await findProviderByPhone(phone);
+        console.log(provider)
 
         if(!provider) {
             return response.status(404).json({ error: 'Wrong data, try again' });
@@ -129,6 +145,37 @@ const findProviderByPhone = ((phone) => prisma.provider.findFirst({
         phone
     }
 }))
+
+const emailRegistered = async (request, response) => {
+    try {
+        const email =  request.query.email;
+        
+        const exist = await findProviderByEmail(email);
+        console.log(exist)
+    
+        if(exist) {
+            return response.status(200).json(true);
+        }
+        return response.status(200).json(false);
+    } catch(err) {
+        return response.status(500).json({ error: 'Internal server error' });
+    }
+}
+const phoneRegistered = async (request, response) => {
+    try {
+        const phone =  request.query.phone;
+        
+        const exist = await findProviderByPhone(phone);
+        console.log(exist)
+    
+        if(exist) {
+            return response.status(200).json(true);
+        }
+        return response.status(200).json(false);
+    } catch(err) {
+        return response.status(500).json({ error: 'Internal server error' });
+    }
+}
 
 const getIdByProvider = (tokenJWT) => {
     const token = tokenJWT.split(" ")[1];    
@@ -198,5 +245,7 @@ export default {
     loginProvider,
     updateProviderData,
     findProviderByPhone,
+    emailRegistered,
+    phoneRegistered,
     teste
 }

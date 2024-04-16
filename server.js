@@ -1,4 +1,4 @@
-import express, { request, response } from 'express';
+import express from 'express';
 import requesterRouter from './src/domains/requester/routes.js';
 import providerRouter from './src/domains/provider/routes.js'
 import serviceTypeRouter from './src/domains/serviceType/routes.js'

@@ -20,13 +20,13 @@ export const providerPersonal = z.object({
 });
 
 export const loginSchema = z.object({
-  phone: z.string().refine(value => /^(\(?\d{2}\)?\s)?(\d{4,5}-?\d{4})$/.test(value)),
-  password: z.string()
+//  phone: z.string().refine(value => /^(\(?\d{2}\)?\s)?(\d{4,5}-?\d{4})$/.test(value)),
+  password: z.string(),
+  phone: z.string().refine(value => /^(\(?\d{2}\)?\s?)?\d{4,5}-?\d{4}$/.test(value)),
 });
 
 export const userUpdateSchema = z.object({
   name: z.string().min(2, { message: 'invalid name length' }).optional(),
-  companyName: z.string().min(2, { message: 'invalid company name length' }).optional(),
   email: z.string().email({ message: 'Invalid email' }).optional(),
   password: z.string().min(6, { message: 'Invalid password length' }).optional(),
 });
