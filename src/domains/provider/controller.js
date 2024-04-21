@@ -6,18 +6,10 @@ import jwt from "jsonwebtoken";
 
 const registerNewProvider = async (request, response) => {
     try {
-        console.log('====================================');
-        console.log("Entrou");
-        console.log('====================================');
         const type = request.query.type
-        console.log(type);
 
-//        const { email, phone, password } = userSchema.parse(request.body);
-        const { email, phone, password } = request.body;
+        const { email, phone, password, city } = request.body;
 
-        console.log('====================================');
-        console.log(email, phone, password);
-        console.log('====================================');
         const existEmailRegistered = await findProviderByEmail(email);
         const existPhoneRegistered = await findProviderByPhone(phone)
         
@@ -41,6 +33,8 @@ const registerNewProvider = async (request, response) => {
                     email,
                     phone,
                     password: hashedPassword,
+                    city,
+                    typeProvider: type,
                     providerPersonal: {
                         create: {
                             name,
@@ -52,19 +46,24 @@ const registerNewProvider = async (request, response) => {
                     providerPersonal: true
                 }
             });
+            console.log('====================================');
+            console.log("OLHA O NEW PROVIDER");
+            console.log('====================================');
+            console.log(newProvider)
         } else if (type === "legal") {
-            console.log("Chegou nessa parte do legal")
 //            const { cnpj, companyName } = providerLegalSchema.parse(request.body);
             const { cnpj, companyName } = request.body;
-            console.log("passou do zod")
             const hashedPassword = bcrypt.hashSync(password, 15);
-            console.log(hashedPassword)
+
+            console.log("Provider Legal")
 
             newProvider = await prisma.provider.create({
                 data: {
                     email,
                     phone,
                     password: hashedPassword,
+                    city,
+                    typeProvider: type,
                     providerLegal: {
                         create: {
                             cnpj,
@@ -76,17 +75,21 @@ const registerNewProvider = async (request, response) => {
                     providerLegal: true
                 }
             });
+            console.log("DEU CERTO")
         } else {
             return response.status(400).json({ error: 'Invalid provider type.', type });
         }
         
         delete newProvider.password;
-        console.log("salvou")
 
         response.status(201).json({
             newProvider,
         });
     } catch(error) {
+        console.log("OLHA O ERRO")
+        console.log('====================================');
+        console.log(error);
+        console.log('====================================');
         if (error instanceof z.ZodError) {
             return response.status(422).json({
                 message: error.errors,
@@ -101,10 +104,10 @@ const loginProvider = async (request, response) => {
     try {
 //        const {password, phone} = loginSchema.parse(request.body);
         const {password, phone} = request.body;
-        console.log({password, phone})
-
+        console.log('====================================');
+        console.log(password, phone);
+        console.log('====================================');
         const provider = await findProviderByPhone(phone);
-        console.log(provider)
 
         if(!provider) {
             return response.status(404).json({ error: 'Wrong data, try again' });
@@ -166,7 +169,6 @@ const phoneRegistered = async (request, response) => {
         const phone =  request.query.phone;
         
         const exist = await findProviderByPhone(phone);
-        console.log(exist)
     
         if(exist) {
             return response.status(200).json(true);
@@ -187,6 +189,22 @@ const getIdByProvider = (tokenJWT) => {
     return;
 }
 
+const getUserInformation = async (req, res) => {
+    try {
+        const tokenJWT = req.headers.authorization;
+        const token = tokenJWT.split(" ")[1]; 
+        const decodedToken = jwt.decode(token);
+
+        if (decodedToken && decodedToken.providerId !== undefined) {
+            const providerId = decodedToken.providerId;
+            console.log(decodedToken)
+            return res.status(200).json(decodedToken);
+        }
+        return res.status(200).json(decodedToken);
+    } catch (error) {
+        console.log(error)
+    }
+}
 //continuar fazendo updateProviderData
 const updateProviderData = async (request, response) => {
     try {
@@ -236,6 +254,7 @@ const updateProviderData = async (request, response) => {
         return response.status(500).json({ error: error.message });
     }
 }
+
 const teste = (request, response) => {
     console.log("Entrou")
     return response.status(200).json({error: 'funciona'});
@@ -247,5 +266,5 @@ export default {
     findProviderByPhone,
     emailRegistered,
     phoneRegistered,
-    teste
+    getUserInformation
 }

@@ -8,7 +8,7 @@ const server = express();
 server.use(express.json());
 server.use(requesterRouter);
 server.use(providerRouter);
-server.use(serviceTypeRouter)
+server.use(serviceTypeRouter);
 
 server.listen(port, () => {
     console.log("Server is running on port ", port);

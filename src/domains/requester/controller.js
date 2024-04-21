@@ -121,6 +121,7 @@ const loginRequester = async (request, response) => {
             },
             process.env.SECRET
           );
+          console.log("loginn")
           response.json({
             token,
           });

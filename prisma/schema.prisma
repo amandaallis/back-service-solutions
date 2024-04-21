@@ -39,6 +39,8 @@ model Provider {
   email            String
   phone            String
   password         String
+  city             String
+  typeProvider     String
   providerLegal    ProviderLegal[]
   providerPersonal ProviderPersonal[]
   providerAdress   ProviderAdress[]
@@ -58,6 +60,7 @@ model ProviderPersonal {
   Provider   Provider? @relation(fields: [providerId], references: [id])
   providerId Int?
   name       String
+  cpf        String
 }
 
 model ProviderAdress {
