@@ -10,59 +10,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model requester {
-  id       Int      @id @default(autoincrement())
+model Requester {
+  id       Int    @id @default(autoincrement())
   name     String
   email    String
   password String
-  rg       String
-  cpf      String
   phone    String
-  adress   adress[]
 }
 
-model type_service_list {
-  id          Int           @id @default(autoincrement())
-  nameService String
-  Provider    provider?     @relation(fields: [providerId], references: [id])
+model Adress {
+  id             Int              @id @default(autoincrement())
+  street         String
+  number         Int
+  district       String
+  city           String
+  cep            String
+  providerAdress ProviderAdress[]
+}
+
+model ServiceList {
+  id              Int               @id @default(autoincrement())
+  service         String
+  typeServiceList TypeServiceList[]
+}
+
+model Provider {
+  id               Int                @id @default(autoincrement())
+  email            String
+  phone            String
+  password         String
+  city             String
+  typeProvider     String
+  providerLegal    ProviderLegal[]
+  providerPersonal ProviderPersonal[]
+  providerAdress   ProviderAdress[]
+  typeServiceList  TypeServiceList[]
+}
+
+model ProviderLegal {
+  id          Int       @id @default(autoincrement())
+  provider    Provider? @relation(fields: [providerId], references: [id])
   providerId  Int?
-  status      statusService
-  service     service_list? @relation(fields: [serviceId], references: [id])
-  serviceId   Int?
+  cnpj        String
+  companyName String
 }
 
-model service_list {
-  id               Int                 @id @default(autoincrement())
-  service          String
-  typeServiceLists type_service_list[]
+model ProviderPersonal {
+  id         Int       @id @default(autoincrement())
+  Provider   Provider? @relation(fields: [providerId], references: [id])
+  providerId Int?
+  name       String
+  cpf        String
 }
 
-enum statusService {
+model ProviderAdress {
+  id         Int       @id @default(autoincrement())
+  adress     Adress?   @relation(fields: [adressId], references: [id])
+  adressId   Int?
+  provider   Provider? @relation(fields: [providerId], references: [id])
+  providerId Int?
+}
+
+enum StatusService {
   ON
   OFF
 }
 
-model provider {
-  id               Int                 @id @default(autoincrement())
-  name             String
-  email            String
-  password         String
-  rg               String
-  cpf              String
-  phone            String
-  typeServiceLists type_service_list[]
-  adress           adress[]
-}
-
-model adress {
-  id           Int       @id @default(autoincrement())
-  provider     provider  @relation(fields: [provider_id], references: [id])
-  provider_id  Int
-  requester    requester @relation(fields: [requester_id], references: [id])
-  requester_id Int
-  number       Int
-  city         String
-  street       String
-  district     String
-  cep          String
+model TypeServiceList {
+  id            Int           @id @default(autoincrement())
+  Provider      Provider?     @relation(fields: [providerId], references: [id])
+  providerId    Int?
+  ServiceList   ServiceList?  @relation(fields: [serviceListId], references: [id])
+  serviceListId Int?
+  status        StatusService
 }
