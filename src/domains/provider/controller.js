@@ -266,5 +266,6 @@ export default {
     findProviderByPhone,
     emailRegistered,
     phoneRegistered,
-    getUserInformation
+    getUserInformation,
+    teste
 }

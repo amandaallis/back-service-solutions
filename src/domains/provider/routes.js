@@ -10,6 +10,7 @@ router.put("/update-provider", auth, registerNewProvider.updateProviderData);
 router.get("/email-alredy-registred",registerNewProvider.emailRegistered);
 router.get("/phone-alredy-registred",registerNewProvider.phoneRegistered);
 router.get("/user-info", auth, registerNewProvider.getUserInformation)
+router.get("/teste", registerNewProvider.teste)
 
 export default router;
 
