@@ -183,5 +183,6 @@ export default {
     loginRequester,
     updateRequesterData,
     emailRegistered,
-    phoneRegistered
+    phoneRegistered,
+    getIdByRequester
 };

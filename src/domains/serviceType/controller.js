@@ -52,6 +52,20 @@ const newService = async (request, response) => {
     }
 };
 
+const findLegalProvider = async (providerId) => {
+    const provider = await prisma.providerLegal.findFirst({
+        where: {
+            providerId
+        }
+    });
+
+    if (provider) {
+        return provider.companyName;
+    } else {
+        return "Nome da empresa não encontrado";
+    }
+}
+
 const findPersonalProvider = async (id) => {
     const user = await prisma.providerPersonal.findFirst({
         where: {
@@ -59,15 +73,6 @@ const findPersonalProvider = async (id) => {
         }
     });
     return user.name;
-}
-
-const findLegalProvider = async (id) => {
-    const user = await prisma.providerLegal.findFirst({
-        where: {
-            id
-        }
-    });
-    return user.companyName;
 }
 
 const availableProvidersByService = async (request, response) => {
@@ -100,9 +105,15 @@ const availableProvidersByService = async (request, response) => {
             let userName;
             const user = userById.find(u => u.id === item.providerId);
 
-            if(user.typeProvider == 'personal') {
+            console.log("aqui e o id do provider")
+            console.log(item.providerId)
+            if (!user) {
+                return { id: item.id, userName: "Usuário não encontrado", city: "", phone: "" };
+            }
+
+            if (user.typeProvider === 'personal') {
                 userName = await findPersonalProvider(item.providerId);
-            } else {
+            } else if(user.typeProvider === 'legal') {
                 userName = await findLegalProvider(item.providerId);
             }
 
@@ -112,17 +123,17 @@ const availableProvidersByService = async (request, response) => {
                 city: user.city,
                 phone: user.phone
             };
+
             return data;
         }));
-        
+
         response.send(dataReturn);
 
-    } catch(error) {
+    } catch (error) {
         console.log(error);
         response.status(500).send({ error: 'Erro ao buscar os provedores disponíveis.' });
     }
 };
-
 
 export default {
     getAllService,

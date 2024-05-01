@@ -11,21 +11,23 @@ datasource db {
 }
 
 model Requester {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String
-  password String
-  phone    String
+  id               Int                @id @default(autoincrement())
+  name             String
+  email            String
+  password         String
+  phone            String
+  RequiredServices RequiredServices[]
 }
 
 model Adress {
-  id             Int              @id @default(autoincrement())
-  street         String
-  number         Int
-  district       String
-  city           String
-  cep            String
-  providerAdress ProviderAdress[]
+  id               Int                @id @default(autoincrement())
+  street           String
+  number           Int
+  district         String
+  city             String
+  cep              String
+  providerAdress   ProviderAdress[]
+  RequiredServices RequiredServices[]
 }
 
 model ServiceList {
@@ -45,6 +47,7 @@ model Provider {
   providerPersonal ProviderPersonal[]
   providerAdress   ProviderAdress[]
   typeServiceList  TypeServiceList[]
+  RequiredServices RequiredServices[]
 }
 
 model ProviderLegal {
@@ -77,10 +80,33 @@ enum StatusService {
 }
 
 model TypeServiceList {
-  id            Int           @id @default(autoincrement())
-  Provider      Provider?     @relation(fields: [providerId], references: [id])
-  providerId    Int?
-  ServiceList   ServiceList?  @relation(fields: [serviceListId], references: [id])
-  serviceListId Int?
-  status        StatusService
+  id               Int                @id @default(autoincrement())
+  Provider         Provider?          @relation(fields: [providerId], references: [id])
+  providerId       Int?
+  ServiceList      ServiceList?       @relation(fields: [serviceListId], references: [id])
+  serviceListId    Int?
+  status           StatusService
+  RequiredServices RequiredServices[]
+}
+
+enum StatusRequiredService {
+  APPROVED
+  REJECTED
+  REALIZED
+  OPEN
+}
+
+model RequiredServices {
+  id                    Int                   @id @default(autoincrement())
+  TypeServiceList       TypeServiceList?      @relation(fields: [typeServiceId], references: [id])
+  typeServiceId         Int?
+  Provider              Provider?             @relation(fields: [providerId], references: [id])
+  providerId            Int?
+  Requester             Requester?            @relation(fields: [requesterId], references: [id])
+  requesterId           Int?
+  adress                Adress?               @relation(fields: [adressId], references: [id])
+  adressId              Int?
+  requestedData         DateTime
+  updatedAt             DateTime?
+  statusRequiredService StatusRequiredService
 }
