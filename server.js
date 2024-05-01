@@ -3,7 +3,7 @@ import requesterRouter from './src/domains/requester/routes.js';
 import providerRouter from './src/domains/provider/routes.js'
 import serviceTypeRouter from './src/domains/serviceType/routes.js'
 
-const port = 3000;
+const port = process.env.PORT || 3000
 const server = express();
 server.use(express.json());
 server.use(requesterRouter);
