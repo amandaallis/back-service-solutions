@@ -104,6 +104,7 @@ const availableProvidersByService = async (request, response) => {
         const dataReturn = await Promise.all(providers.map(async item => {
             let userName;
             let serviceListItem = item.serviceListId;
+            let providerId = item.providerId;
             const user = userById.find(u => u.id === item.providerId);
 
             
@@ -122,7 +123,8 @@ const availableProvidersByService = async (request, response) => {
                 userName: userName,
                 city: user.city,
                 phone: user.phone,
-                serviceListItem: serviceListItem
+                serviceListItem: serviceListItem,
+                providerId: providerId
             };
 
             return data;
