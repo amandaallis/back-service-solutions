@@ -103,10 +103,10 @@ const availableProvidersByService = async (request, response) => {
 
         const dataReturn = await Promise.all(providers.map(async item => {
             let userName;
+            let serviceListItem = item.serviceListId;
             const user = userById.find(u => u.id === item.providerId);
 
-            console.log("aqui e o id do provider")
-            console.log(item.providerId)
+            
             if (!user) {
                 return { id: item.id, userName: "Usuário não encontrado", city: "", phone: "" };
             }
@@ -121,7 +121,8 @@ const availableProvidersByService = async (request, response) => {
                 id: item.id,
                 userName: userName,
                 city: user.city,
-                phone: user.phone
+                phone: user.phone,
+                serviceListItem: serviceListItem
             };
 
             return data;
