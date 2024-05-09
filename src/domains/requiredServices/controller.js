@@ -80,9 +80,29 @@ const listMySolicitationsByStatus = async (request, response) => {
     }
 }
 
+const listSolicitationByProvider = async (request, response) => {
+    try {
+        const tokenJWT = request.headers.authorization;
+        const providerId = requesterController.getIdByRequester(tokenJWT);
+
+        const allSolicitations = await prisma.requiredServices.findMany({
+            where: {
+                providerId: providerId
+            }
+        })
+        if (allSolicitations !== null) {
+            return response.status(200).json(allSolicitations);
+        } else {
+            return response.status(200).json([]);
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 export default {
     newRequiredService,
     listMySolicitations,
-    listMySolicitationsByStatus
+    listMySolicitationsByStatus,
+    listSolicitationByProvider
 }
