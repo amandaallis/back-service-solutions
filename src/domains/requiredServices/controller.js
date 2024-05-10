@@ -91,7 +91,41 @@ const listSolicitationByProvider = async (request, response) => {
             }
         })
         if (allSolicitations !== null) {
-            return response.status(200).json(allSolicitations);
+
+          const object =  allSolicitations.map(async(item) => {
+            const typeService = await prisma.serviceList.findFirst({
+                where: {
+                    id: item.typeServiceId
+                }
+            }); 
+            const requester = await prisma.requester.findFirst({
+                where: {
+                    id: item.requesterId
+                }
+            })
+            const adress = await prisma.adress.findFirst({
+                where: {
+                    id: item.adressId
+                }
+            })
+
+            const data = {
+                id: item.id,
+                userName: requester.name,
+                city: adress.city,
+                phone: requester.phone,
+                providerId: providerId,
+                serviceId: item.id
+            };
+            
+            console.log("Aqui é o typeService")
+            console.log(typeService)
+
+            console.log("Aqui é o requester")
+            console.log(requester)
+            return response.status(200).json(data);
+           })
+
         } else {
             return response.status(200).json([]);
         }
