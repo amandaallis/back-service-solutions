@@ -109,6 +109,9 @@ const loginProvider = async (request, response) => {
         console.log('====================================');
         const provider = await findProviderByPhone(phone);
 
+        console.log("Olha aqui o provider encontrado")
+        console.log(provider)
+
         if(!provider) {
             return response.status(404).json({ error: 'Wrong data, try again' });
         }

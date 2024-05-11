@@ -4,19 +4,26 @@ import requesterController from '../requester/controller.js';
 
 //Aqui vai ser pro cliente solicitar o serviço
 const newRequiredService = async (request, response) => {
+    console.log("New Required Service")
     try {
-        const { typeServiceId, providerId, street, number, district, city, cep } = request.body;
+        const { typeServiceId, description, providerId, street, number, district, city, cep } = request.body;
+        console.log("Entrou aqui no required service")
+        console.log(typeServiceId)
         const tokenJWT = request.headers.authorization;
+        console.log(tokenJWT)
         const requestedId = requesterController.getIdByRequester(tokenJWT);
+        console.log("requestedId")
         console.log(requestedId)
         const requestedData = new Date();
         const statusRequiredService = "OPEN";
 
         await prisma.requiredServices.create({
             data: {
-                TypeServiceList: { connect: { id: typeServiceId } },
-                Provider: { connect: { id: providerId } },
+             //   TypeServiceList: { connect: { id: Number(typeServiceId) } },
+                ServiceList: { connect: { id: Number(typeServiceId) } },
+                Provider: { connect: { id: Number(providerId) } },
                 Requester: { connect: { id: requestedId } },
+                description,
                 adress: {
                     create: {
                         street,

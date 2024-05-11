@@ -31,9 +31,10 @@ model Adress {
 }
 
 model ServiceList {
-  id              Int               @id @default(autoincrement())
-  service         String
-  typeServiceList TypeServiceList[]
+  id               Int                @id @default(autoincrement())
+  service          String
+  typeServiceList  TypeServiceList[]
+  RequiredServices RequiredServices[]
 }
 
 model Provider {
@@ -98,7 +99,8 @@ enum StatusRequiredService {
 
 model RequiredServices {
   id                    Int                   @id @default(autoincrement())
-  TypeServiceList       TypeServiceList?      @relation(fields: [typeServiceId], references: [id])
+  //TypeServiceList       TypeServiceList?      @relation(fields: [typeServiceId], references: [id])
+  ServiceList           ServiceList?          @relation(fields: [typeServiceId], references: [id])
   typeServiceId         Int?
   Provider              Provider?             @relation(fields: [providerId], references: [id])
   providerId            Int?
@@ -106,7 +108,10 @@ model RequiredServices {
   requesterId           Int?
   adress                Adress?               @relation(fields: [adressId], references: [id])
   adressId              Int?
+  description           String?
   requestedData         DateTime
   updatedAt             DateTime?
   statusRequiredService StatusRequiredService
+  TypeServiceList       TypeServiceList?      @relation(fields: [typeServiceListId], references: [id])
+  typeServiceListId     Int?
 }
