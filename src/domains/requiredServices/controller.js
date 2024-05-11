@@ -91,55 +91,47 @@ const listSolicitationByProvider = async (request, response) => {
     try {
         const tokenJWT = request.headers.authorization;
         const providerId = requesterController.getIdByRequester(tokenJWT);
+        console.log(tokenJWT);
+        console.log(providerId);
 
         const allSolicitations = await prisma.requiredServices.findMany({
             where: {
                 providerId: providerId
             }
-        })
-        if (allSolicitations !== null) {
+        });
 
-          const object =  allSolicitations.map(async(item) => {
-            const typeService = await prisma.serviceList.findFirst({
-                where: {
-                    id: item.typeServiceId
-                }
-            }); 
-            const requester = await prisma.requester.findFirst({
-                where: {
-                    id: item.requesterId
-                }
-            })
-            const adress = await prisma.adress.findFirst({
-                where: {
-                    id: item.adressId
-                }
-            })
+        console.log("OLHA O ALL SOLICITATIONS", allSolicitations);
 
-            const data = {
-                id: item.id,
-                userName: requester.name,
-                city: adress.city,
-                phone: requester.phone,
-                providerId: providerId,
-                serviceId: item.id
-            };
-            
-            console.log("Aqui é o typeService")
-            console.log(typeService)
+        if (allSolicitations && allSolicitations.length > 0) {
+            const data = await Promise.all(allSolicitations.map(async(item) => {
+                const [typeService, requester, adress] = await Promise.all([
+                    prisma.serviceList.findFirst({ where: { id: item.typeServiceId } }),
+                    prisma.requester.findFirst({ where: { id: item.requesterId } }),
+                    prisma.adress.findFirst({ where: { id: item.adressId } })
+                ]);
 
-            console.log("Aqui é o requester")
-            console.log(requester)
+                return {
+                    id: item.id,
+                    userName: requester.name,
+                    city: adress.city,
+                    phone: requester.phone,
+                    providerId: providerId,
+                    serviceId: item.id
+                };
+            }));
+
+            console.log("OLHA O DATA", data);
+
             return response.status(200).json(data);
-           })
-
         } else {
             return response.status(200).json([]);
         }
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        return response.status(500).json({ error: "Internal server error" });
     }
 }
+
 
 export default {
     newRequiredService,
