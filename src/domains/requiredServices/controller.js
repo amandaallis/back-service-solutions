@@ -109,15 +109,17 @@ const listSolicitationByProvider = async (request, response) => {
                     prisma.requester.findFirst({ where: { id: item.requesterId } }),
                     prisma.adress.findFirst({ where: { id: item.adressId } })
                 ]);
-
+                console.log("OLHA O TYPE SERVICEEEEEEEEEEEEEEE")
+                console.log(typeService)
                 return {
                     id: item.id,
                     userName: requester.name,
                     city: adress.city,
                     phone: requester.phone,
                     providerId: providerId,
-                    serviceId: item.id
-                };
+                    serviceId: typeService.id,
+                    serviceName: typeService.service
+               };
             }));
 
             console.log("OLHA O DATA", data);
