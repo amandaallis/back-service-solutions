@@ -75,6 +75,20 @@ const findPersonalProvider = async (id) => {
     return user.name;
 }
 
+const findServiceById = async (request, response) => {
+    try {
+        const {id} = request.params
+        const serviceById = await prisma.serviceList.findFirst({
+            where: {
+                id: Number(id)
+            }
+        });
+        response.send(serviceById);
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 const availableProvidersByService = async (request, response) => {
     try {
         const { service } = request.params;
@@ -142,5 +156,6 @@ export default {
     getAllService,
     newService,
     availableProviders,
-    availableProvidersByService
+    availableProvidersByService,
+    findServiceById
 };
