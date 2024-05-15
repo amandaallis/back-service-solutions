@@ -114,6 +114,7 @@ const listSolicitationByProvider = async (request, response) => {
                 return {
                     id: item.id,
                     userName: requester.name,
+                    adress: adress,
                     city: adress.city,
                     phone: requester.phone,
                     providerId: providerId,
