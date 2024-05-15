@@ -118,7 +118,8 @@ const listSolicitationByProvider = async (request, response) => {
                     phone: requester.phone,
                     providerId: providerId,
                     serviceId: typeService.id,
-                    serviceName: typeService.service
+                    serviceName: typeService.service,
+                    description: item.description
                };
             }));
 
