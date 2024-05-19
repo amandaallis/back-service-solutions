@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken"
 
 const registerNewRequester = async (request, response) => {
     try {
-        const { name, phone, password, email } =  userSchema.parse(request.body);
+        const { name, phone, password, email, city } =  userSchema.parse(request.body);
 
         const existEmailRegistered = await findRequesterByEmail(email);
 
@@ -29,7 +29,7 @@ const registerNewRequester = async (request, response) => {
 
         const newRequester = await prisma.requester.create({
             data: {
-                name, phone, password: hashedPassword, email
+                name, phone, password: hashedPassword, email, city
             }
         })
         delete newRequester.password

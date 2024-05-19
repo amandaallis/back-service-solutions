@@ -16,6 +16,7 @@ model Requester {
   email            String
   password         String
   phone            String
+  city             String?
   RequiredServices RequiredServices[]
 }
 

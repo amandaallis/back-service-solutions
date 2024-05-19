@@ -110,7 +110,7 @@ const availableProvidersByService = async (request, response) => {
 
         const userIds = providers
             .map(item => item.providerId)
-            .filter(id => id !== null && id !== undefined);
+            .filter(id => id !== null && id !== undefined)
 
         console.log("olha os userIds")
         console.log(userIds)
@@ -148,7 +148,6 @@ const availableProvidersByService = async (request, response) => {
                 providerId: providerId
             };
 
-            return data;
         }));
 
         response.send(dataReturn);
