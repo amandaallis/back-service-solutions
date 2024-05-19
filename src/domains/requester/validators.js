@@ -6,6 +6,7 @@ export const userSchema = z.object({
     email: z.string().email({ message: 'Invalid email' }),
     password: z.string().min(6, { message: 'Invalid password length' }),
     phone: z.string().refine(value => /^(\(?\d{2}\)?\s?)?\d{4,5}-?\d{4}$/.test(value)),
+    city: z.string()
 });
 
 export const loginSchema = z.object({
