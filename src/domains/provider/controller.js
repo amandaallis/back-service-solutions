@@ -270,5 +270,6 @@ export default {
     emailRegistered,
     phoneRegistered,
     getUserInformation,
-    teste
+    teste,
+    getIdByProvider
 }

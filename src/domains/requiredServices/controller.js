@@ -1,6 +1,7 @@
 import { response } from 'express';
 import prisma from '../../database/prisma.js';
 import requesterController from '../requester/controller.js';
+import providerController from '../provider/controller.js';
 
 //Aqui vai ser pro cliente solicitar o serviço
 const newRequiredService = async (request, response) => {
@@ -11,7 +12,7 @@ const newRequiredService = async (request, response) => {
         console.log(typeServiceId)
         const tokenJWT = request.headers.authorization;
         console.log(tokenJWT)
-        const requestedId = requesterController.getIdByRequester(tokenJWT);
+        const requestedId = providerController.
         console.log("requestedId")
         console.log(requestedId)
         const requestedData = new Date();
@@ -90,9 +91,7 @@ const listMySolicitationsByStatus = async (request, response) => {
 const listSolicitationByProvider = async (request, response) => {
     try {
         const tokenJWT = request.headers.authorization;
-        const providerId = requesterController.getIdByRequester(tokenJWT);
-        console.log(tokenJWT);
-        console.log(providerId);
+        const providerId = providerController.getIdByProvider(tokenJWT);
 
         const allSolicitations = await prisma.requiredServices.findMany({
             where: {
