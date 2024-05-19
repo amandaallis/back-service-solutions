@@ -105,7 +105,18 @@ const availableProvidersByService = async (request, response) => {
 
         const providers = await availableProviders(typeServiceId.id);
 
-        const userIds = providers.map(item => item.providerId);
+        console.log("Olha os providers")
+        console.log(providers)
+
+        const userIds = providers
+            .map(item => item.providerId)
+            .filter(id => id !== null && id !== undefined);
+
+        console.log("olha os userIds")
+        console.log(userIds)
+        if(!userIds) {
+            userIds = []
+        }
 
         const userById = await prisma.provider.findMany({
             where: {
@@ -148,6 +159,7 @@ const availableProvidersByService = async (request, response) => {
 
     } catch (error) {
         console.log(error);
+
         response.status(500).send({ error: 'Erro ao buscar os provedores disponíveis.' });
     }
 };

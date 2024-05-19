@@ -12,7 +12,7 @@ const newRequiredService = async (request, response) => {
         console.log(typeServiceId)
         const tokenJWT = request.headers.authorization;
         console.log(tokenJWT)
-        const requestedId = providerController.
+        const requestedId = providerController.getIdByProvider(tokenJWT)
         console.log("requestedId")
         console.log(requestedId)
         const requestedData = new Date();
