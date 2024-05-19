@@ -93,11 +93,15 @@ const availableProvidersByService = async (request, response) => {
     try {
         const { service } = request.params;
 
+        console.log("Olha o service");
+        console.log(service);
+
         const typeServiceId = await prisma.serviceList.findFirst({
-            where: {
-                service
-            }
+            where: { service }
         });
+
+        console.log("Olha o typeServiceId");
+        console.log(typeServiceId);
 
         if (!typeServiceId) {
             return response.status(404).send({ error: 'Serviço não encontrado.' });
@@ -105,15 +109,20 @@ const availableProvidersByService = async (request, response) => {
 
         const providers = await availableProviders(typeServiceId.id);
 
-        console.log("Olha os providers")
-        console.log(providers)
+        console.log("Olha os providers");
+        console.log(providers);
 
+        // Filtra os IDs dos provedores removendo valores nulos ou indefinidos
         const userIds = providers
             .map(item => item.providerId)
-            .filter(id => id !== null && id !== undefined)
+            .filter(id => id !== null && id !== undefined);
 
-        console.log("olha os userIds")
-        console.log(userIds)
+        console.log("Olha os userIds");
+        console.log(userIds);
+
+        if (userIds.length === 0) {
+            return response.status(404).send({ error: 'Nenhum provedor disponível encontrado.' });
+        }
 
         const userById = await prisma.provider.findMany({
             where: {
@@ -125,8 +134,8 @@ const availableProvidersByService = async (request, response) => {
 
         const dataReturn = await Promise.all(providers.map(async item => {
             let userName;
-            let serviceListItem = item.serviceListId;
-            let providerId = item.providerId;
+            const serviceListItem = item.serviceListId;
+            const providerId = item.providerId;
             const user = userById.find(u => u.id === item.providerId);
 
             if (!user) {
@@ -135,28 +144,28 @@ const availableProvidersByService = async (request, response) => {
 
             if (user.typeProvider === 'personal') {
                 userName = await findPersonalProvider(item.providerId);
-            } else if(user.typeProvider === 'legal') {
+            } else if (user.typeProvider === 'legal') {
                 userName = await findLegalProvider(item.providerId);
             }
 
-            const data = {
+            return {
                 id: item.id,
-                userName: userName,
+                userName: userName || "Nome não encontrado",
                 city: user.city,
                 phone: user.phone,
                 serviceListItem: serviceListItem,
                 providerId: providerId
             };
-
         }));
 
         response.send(dataReturn);
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         response.status(500).send({ error: 'Erro ao buscar os provedores disponíveis.' });
     }
 };
+
 
 
 export default {
