@@ -10,8 +10,21 @@ const allServicesByStatus = async (serviceListId, status) => {
     });
 };
 
-export const availableProviders = async (typeServiceId) => {
-    const onServices = await allServicesByStatus(typeServiceId, "ON");
+const allServicesByStatusAndCity = async (serviceListId, status, requesterCity) => {
+    return await prisma.typeServiceList.findMany({
+        where: {
+            status,
+            serviceListId,
+            Provider: {
+                city: requesterCity
+            }
+        }
+    });
+};
+
+
+export const availableProviders = async (typeServiceId, requesterCity) => {
+    const onServices = await allServicesByStatusAndCity(typeServiceId, "ON", requesterCity);
     return onServices; 
 };
 
@@ -92,6 +105,21 @@ const findServiceById = async (request, response) => {
 const availableProvidersByService = async (request, response) => {
     try {
         const { service } = request.params;
+        const tokenJWT = request.headers.authorization;
+        const token = tokenJWT.split(" ")[1];    
+        
+        const decodedToken = jwt.decode(token);
+        console.log("decodedToken")
+        console.log(decodedToken)
+
+        const requester = await prisma.requester.findFirst({
+            where: {
+                id: decodedToken.requesterId
+            }
+        });
+        
+        console.log("OLHA A CIDADEEEEEEEEEEEEEEEEEEEEE")
+        console.log(requester)
 
         console.log("Olha o service");
         console.log(service);
@@ -107,7 +135,7 @@ const availableProvidersByService = async (request, response) => {
             return response.status(404).send({ error: 'Serviço não encontrado.' });
         }
 
-        const providers = await availableProviders(typeServiceId.id);
+        const providers = await availableProviders(typeServiceId.id, requester.city);
 
         console.log("Olha os providers");
         console.log(providers);
