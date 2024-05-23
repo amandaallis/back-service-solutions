@@ -5,16 +5,10 @@ import providerController from '../provider/controller.js';
 
 //Aqui vai ser pro cliente solicitar o serviço
 const newRequiredService = async (request, response) => {
-    console.log("New Required Service")
     try {
         const { typeServiceId, description, providerId, street, number, district, city, cep } = request.body;
-        console.log("Entrou aqui no required service")
-        console.log(typeServiceId)
         const tokenJWT = request.headers.authorization;
-        console.log(tokenJWT)
         const requestedId = requesterController.getIdByRequester(tokenJWT)
-        console.log("requestedId")
-        console.log(requestedId)
         const requestedData = new Date();
         const statusRequiredService = "OPEN";
 
@@ -68,7 +62,6 @@ const listMySolicitationsByStatus = async (request, response) => {
         const tokenJWT = request.headers.authorization;
         const situation = request.params.status;
         const requestedId = requesterController.getIdByRequester(tokenJWT);
-        console.log(situation);
         
         const mySolicitations = await prisma.requiredServices.findMany({
             where: {
@@ -99,8 +92,6 @@ const listSolicitationByProvider = async (request, response) => {
             }
         });
 
-        console.log("OLHA O ALL SOLICITATIONS", allSolicitations);
-
         if (allSolicitations && allSolicitations.length > 0) {
             const data = await Promise.all(allSolicitations.map(async(item) => {
                 const [typeService, requester, adress] = await Promise.all([
@@ -108,8 +99,7 @@ const listSolicitationByProvider = async (request, response) => {
                     prisma.requester.findFirst({ where: { id: item.requesterId } }),
                     prisma.adress.findFirst({ where: { id: item.adressId } })
                 ]);
-                console.log("OLHA O TYPE SERVICEEEEEEEEEEEEEEE")
-                console.log(typeService)
+
                 return {
                     id: item.id,
                     userName: requester.name,
@@ -122,8 +112,6 @@ const listSolicitationByProvider = async (request, response) => {
                     description: item.description
                };
             }));
-
-            console.log("OLHA O DATA", data);
 
             return response.status(200).json(data);
         } else {

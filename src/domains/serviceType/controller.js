@@ -109,8 +109,6 @@ const availableProvidersByService = async (request, response) => {
         const token = tokenJWT.split(" ")[1];    
         
         const decodedToken = jwt.decode(token);
-        console.log("decodedToken")
-        console.log(decodedToken)
 
         const requester = await prisma.requester.findFirst({
             where: {
@@ -118,18 +116,9 @@ const availableProvidersByService = async (request, response) => {
             }
         });
         
-        console.log("OLHA A CIDADEEEEEEEEEEEEEEEEEEEEE")
-        console.log(requester)
-
-        console.log("Olha o service");
-        console.log(service);
-
         const typeServiceId = await prisma.serviceList.findFirst({
             where: { service }
         });
-
-        console.log("Olha o typeServiceId");
-        console.log(typeServiceId);
 
         if (!typeServiceId) {
             return response.status(404).send({ error: 'Serviço não encontrado.' });
@@ -137,16 +126,10 @@ const availableProvidersByService = async (request, response) => {
 
         const providers = await availableProviders(typeServiceId.id, requester.city);
 
-        console.log("Olha os providers");
-        console.log(providers);
-
         // Filtra os IDs dos provedores removendo valores nulos ou indefinidos
         const userIds = providers
             .map(item => item.providerId)
             .filter(id => id !== null && id !== undefined);
-
-        console.log("Olha os userIds");
-        console.log(userIds);
 
         if (userIds.length === 0) {
             return response.status(404).send({ error: 'Nenhum provedor disponível encontrado.' });

@@ -46,16 +46,10 @@ const registerNewProvider = async (request, response) => {
                     providerPersonal: true
                 }
             });
-            console.log('====================================');
-            console.log("OLHA O NEW PROVIDER");
-            console.log('====================================');
-            console.log(newProvider)
         } else if (type === "legal") {
 //            const { cnpj, companyName } = providerLegalSchema.parse(request.body);
             const { cnpj, companyName } = request.body;
             const hashedPassword = bcrypt.hashSync(password, 15);
-
-            console.log("Provider Legal")
 
             newProvider = await prisma.provider.create({
                 data: {
@@ -75,7 +69,6 @@ const registerNewProvider = async (request, response) => {
                     providerLegal: true
                 }
             });
-            console.log("DEU CERTO")
         } else {
             return response.status(400).json({ error: 'Invalid provider type.', type });
         }
@@ -86,16 +79,12 @@ const registerNewProvider = async (request, response) => {
             newProvider,
         });
     } catch(error) {
-        console.log("OLHA O ERRO")
-        console.log('====================================');
         console.log(error);
-        console.log('====================================');
         if (error instanceof z.ZodError) {
             return response.status(422).json({
                 message: error.errors,
             });
         }
-        console.log(error)
         return response.status(500).json({ error: 'Internal server error' });
     }
 }
@@ -104,13 +93,7 @@ const loginProvider = async (request, response) => {
     try {
 //        const {password, phone} = loginSchema.parse(request.body);
         const {password, phone} = request.body;
-        console.log('====================================');
-        console.log(password, phone);
-        console.log('====================================');
         const provider = await findProviderByPhone(phone);
-
-        console.log("Olha aqui o provider encontrado")
-        console.log(provider)
 
         if(!provider) {
             return response.status(404).json({ error: 'Wrong data, try again' });
@@ -157,7 +140,6 @@ const emailRegistered = async (request, response) => {
         const email =  request.query.email;
         
         const exist = await findProviderByEmail(email);
-        console.log(exist)
     
         if(exist) {
             return response.status(200).json(true);
@@ -200,7 +182,6 @@ const getUserInformation = async (req, res) => {
 
         if (decodedToken && decodedToken.providerId !== undefined) {
             const providerId = decodedToken.providerId;
-            console.log(decodedToken)
             return res.status(200).json(decodedToken);
         }
         return res.status(200).json(decodedToken);
@@ -259,7 +240,6 @@ const updateProviderData = async (request, response) => {
 }
 
 const teste = (request, response) => {
-    console.log("Entrou")
     return response.status(200).json({error: 'funciona'});
 }
 export default {
