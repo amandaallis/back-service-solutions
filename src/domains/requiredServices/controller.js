@@ -2,6 +2,8 @@ import { response } from 'express';
 import prisma from '../../database/prisma.js';
 import requesterController from '../requester/controller.js';
 import providerController from '../provider/controller.js';
+import jwt from "jsonwebtoken";
+
 
 //Aqui vai ser pro cliente solicitar o serviço
 const newRequiredService = async (request, response) => {
@@ -84,7 +86,14 @@ const listMySolicitationsByStatus = async (request, response) => {
 const listSolicitationByProviderAndStatus = async (request, response) => {
     try {
         const tokenJWT = request.headers.authorization;
-        const providerId = providerController.getIdByProvider(tokenJWT);
+        const token = tokenJWT.split(" ")[1]; 
+        const decodedToken = jwt.decode(token);
+
+        if(!decodedToken.providerId) return response.status(200).json([]);
+
+        const providerId = await providerController.getIdByProvider(tokenJWT);
+        if(!providerId) return response.status(200).json([]);
+         
         const {status} = request.params
 
         const allSolicitations = await prisma.requiredServices.findMany({
