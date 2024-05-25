@@ -81,19 +81,21 @@ const listMySolicitationsByStatus = async (request, response) => {
     }
 }
 
-const listSolicitationByProvider = async (request, response) => {
+const listSolicitationByProviderAndStatus = async (request, response) => {
     try {
         const tokenJWT = request.headers.authorization;
         const providerId = providerController.getIdByProvider(tokenJWT);
+        const {status} = request.params
 
         const allSolicitations = await prisma.requiredServices.findMany({
             where: {
-                providerId: providerId
+                providerId: providerId,
+                statusRequiredService: status
             }
         });
 
         if (allSolicitations && allSolicitations.length > 0) {
-            const data = await Promise.all(allSolicitations.map(async(item) => {
+            const data = await Promise.all(allSolicitations.map(async (item) => {
                 const [typeService, requester, adress] = await Promise.all([
                     prisma.serviceList.findFirst({ where: { id: item.typeServiceId } }),
                     prisma.requester.findFirst({ where: { id: item.requesterId } }),
@@ -110,7 +112,7 @@ const listSolicitationByProvider = async (request, response) => {
                     serviceId: typeService.id,
                     serviceName: typeService.service,
                     description: item.description
-               };
+                };
             }));
 
             return response.status(200).json(data);
@@ -123,10 +125,42 @@ const listSolicitationByProvider = async (request, response) => {
     }
 }
 
+const updateSolicitation = async (request, response) => {
+    try {
+        const { solicitationId } = request.params;
+        const { status } = request.params;
+
+        const solicitation = await prisma.requiredServices.findFirst({
+            where: {
+                id: parseInt(solicitationId)
+            }
+        });
+
+        if (!solicitation) {
+            return response.status(404).json({ message: "Solicitação não encontrada" });
+        }
+
+        const updatedSolicitation = await prisma.requiredServices.update({
+            where: {
+                id: parseInt(solicitationId)
+            },
+            data: {
+                statusRequiredService: status
+            }
+        });
+
+        return response.status(200).json(updatedSolicitation);
+    } catch (error) {
+        console.error("Erro ao atualizar a solicitação:", error);
+        return response.status(500).json({ message: "Erro interno do servidor" });
+    }
+};
+
 
 export default {
     newRequiredService,
     listMySolicitations,
     listMySolicitationsByStatus,
-    listSolicitationByProvider
+    listSolicitationByProviderAndStatus,
+    updateSolicitation
 }
