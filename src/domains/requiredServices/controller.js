@@ -93,6 +93,14 @@ const listSolicitationByProviderAndStatus = async (request, response) => {
                 statusRequiredService: status
             }
         });
+        let statusReturn;
+            if(status == "APPROVED") {
+                statusReturn =  "Aceito"
+            } else if(status == "REJECTED") {
+                statusReturn = "Rejeitado"
+            } else {
+                statusReturn = "OPEN"
+            }
 
         if (allSolicitations && allSolicitations.length > 0) {
             const data = await Promise.all(allSolicitations.map(async (item) => {
@@ -111,7 +119,8 @@ const listSolicitationByProviderAndStatus = async (request, response) => {
                     providerId: providerId,
                     serviceId: typeService.id,
                     serviceName: typeService.service,
-                    description: item.description
+                    description: item.description,
+                    status: statusReturn
                 };
             }));
 
