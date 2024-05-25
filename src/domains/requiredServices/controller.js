@@ -97,7 +97,7 @@ const listSolicitationByProviderAndStatus = async (request, response) => {
             if(status == "APPROVED") {
                 statusReturn =  "Aceito"
             } else if(status == "REJECTED") {
-                statusReturn = "Rejeitado"
+                statusReturn = "Recusado"
             } else {
                 statusReturn = "OPEN"
             }
