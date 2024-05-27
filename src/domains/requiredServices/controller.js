@@ -167,6 +167,9 @@ const listAllSolicitationByRequester = async (request, response) => {
                 },
                 Requester: true,
             },
+            orderBy: {
+                requestedData: 'desc',
+            },
         });
 
         let statusReturn;
