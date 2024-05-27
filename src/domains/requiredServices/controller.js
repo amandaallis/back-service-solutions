@@ -142,6 +142,85 @@ const listSolicitationByProviderAndStatus = async (request, response) => {
         return response.status(500).json({ error: "Internal server error" });
     }
 }
+const listAllSolicitationByRequester = async (request, response) => {
+    try {
+        const tokenJWT = request.headers.authorization;
+        const token = tokenJWT.split(" ")[1]; 
+        const decodedToken = jwt.decode(token);
+
+        if (!decodedToken.requesterId) return response.status(200).json([]);
+
+        const requesterId = await requesterController.getIdByRequester(tokenJWT);
+        if (!requesterId) return response.status(200).json([]);
+
+        const allSolicitations = await prisma.requiredServices.findMany({
+            where: {
+                requesterId: requesterId,
+            },
+            include: {
+                ServiceList: true,
+                Provider: {
+                    include: {
+                        providerPersonal: true,
+                        providerLegal: true,
+                    },
+                },
+                Requester: true,
+            },
+        });
+
+        let statusReturn;
+
+        if (allSolicitations && allSolicitations.length > 0) {
+            const data = await Promise.all(allSolicitations.map(async (item) => {
+                const typeService = item.ServiceList;
+                const provider = item.Provider;
+                const requester = item.Requester;
+
+                // Buscar endereço de forma assíncrona
+                const adress = await prisma.adress.findFirst({ where: { id: item.adressId } });
+
+                let providerName = '';
+                if (provider) {
+                    if (provider.providerPersonal && provider.providerPersonal.length > 0) {
+                        providerName = provider.providerPersonal[0].name;
+                    } else if (provider.providerLegal && provider.providerLegal.length > 0) {
+                        providerName = provider.providerLegal[0].companyName;
+                    }
+                }
+
+                if (item.statusRequiredService == "APPROVED") {
+                    statusReturn = "Aceito";
+                } else if (item.statusRequiredService == "REJECTED") {
+                    statusReturn = "Recusado";
+                } else {
+                    statusReturn = "OPEN";
+                }
+
+                return {
+                    id: item.id,
+                    userName: requester.name,
+                    adress: adress,
+                    city: adress ? adress.city : null,
+                    phone: requester.phone,
+                    providerName: providerName,
+                    serviceId: typeService.id,
+                    serviceName: typeService.service,
+                    description: item.description,
+                    status: statusReturn,
+                };
+            }));
+
+            return response.status(200).json(data);
+        } else {
+            return response.status(200).json([]);
+        }
+    } catch (error) {
+        console.log(error);
+        return response.status(500).json({ error: "Internal server error" });
+    }
+}
+
 
 const updateSolicitation = async (request, response) => {
     try {
@@ -180,5 +259,6 @@ export default {
     listMySolicitations,
     listMySolicitationsByStatus,
     listSolicitationByProviderAndStatus,
-    updateSolicitation
+    updateSolicitation,
+    listAllSolicitationByRequester
 }
