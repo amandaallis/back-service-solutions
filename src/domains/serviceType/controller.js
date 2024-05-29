@@ -132,7 +132,7 @@ const availableProvidersByService = async (request, response) => {
             .filter(id => id !== null && id !== undefined);
 
         if (userIds.length === 0) {
-            return response.status(404).send({ error: 'Nenhum provedor disponível encontrado.' });
+            return response.status(200).send([]);
         }
 
         const userById = await prisma.provider.findMany({
