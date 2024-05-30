@@ -8,6 +8,9 @@ const registerNewProvider = async (request, response) => {
     try {
         const type = request.query.type
 
+        console.log("Olha o type que foi solicitado.")
+        console.log(type)
+
         const { email, phone, password, city } = request.body;
 
         const existEmailRegistered = await findProviderByEmail(email);
@@ -24,9 +27,12 @@ const registerNewProvider = async (request, response) => {
         let newProvider;
 
         if (type === "personal") {
-            const { cpf, name } = providerPersonal.parse(request.body);
+            console.log("Entrou no type personal")
+//            const { cpf, name } = providerPersonal.parse(request.body);
 
-            const hashedPassword = bcrypt.hashSync(password, 15);
+        const { cpf, name } = request.body;
+
+        const hashedPassword = bcrypt.hashSync(password, 15);
 
             newProvider = await prisma.provider.create({
                 data: {
