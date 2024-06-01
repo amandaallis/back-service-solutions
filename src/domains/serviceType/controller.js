@@ -80,11 +80,14 @@ const findLegalProvider = async (providerId) => {
 }
 
 const findPersonalProvider = async (id) => {
+    console.log("Entrou no findPersonal")
+    console.log(id)
     const user = await prisma.providerPersonal.findFirst({
         where: {
-            id
+            providerId: id
         }
     });
+    console.log(user)
     return user.name;
 }
 
@@ -131,6 +134,8 @@ const availableProvidersByService = async (request, response) => {
             .map(item => item.providerId)
             .filter(id => id !== null && id !== undefined);
 
+        console.log("UserIds")
+        console.log(userIds)
         if (userIds.length === 0) {
             return response.status(200).send([]);
         }
@@ -144,20 +149,32 @@ const availableProvidersByService = async (request, response) => {
         });
 
         const dataReturn = await Promise.all(providers.map(async item => {
+            console.log("dataReturn")
+            console.log(item)
             let userName;
             const serviceListItem = item.serviceListId;
+            console.log("serviceListItem")
+            console.log(serviceListItem)
             const providerId = item.providerId;
+            console.log("providerId")
+            console.log(providerId)
             const user = userById.find(u => u.id === item.providerId);
-
+            console.log("user")
+            console.log(user)
             if (!user) {
                 return { id: item.id, userName: "Usuário não encontrado", city: "", phone: "" };
             }
 
             if (user.typeProvider === 'personal') {
+                console.log("é personal")
                 userName = await findPersonalProvider(item.providerId);
             } else if (user.typeProvider === 'legal') {
+                console.log("é legal")
                 userName = await findLegalProvider(item.providerId);
             }
+
+            console.log("iteemmm")
+            console.log(item)
 
             return {
                 id: item.id,
