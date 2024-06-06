@@ -4,8 +4,6 @@ import requesterController from '../requester/controller.js';
 import providerController from '../provider/controller.js';
 import jwt from "jsonwebtoken";
 
-
-//Aqui vai ser pro cliente solicitar o serviço
 const newRequiredService = async (request, response) => {
     try {
         const { typeServiceId, description, providerId, street, number, district, city, cep } = request.body;
@@ -16,7 +14,6 @@ const newRequiredService = async (request, response) => {
 
         await prisma.requiredServices.create({
             data: {
-             //   TypeServiceList: { connect: { id: Number(typeServiceId) } },
                 ServiceList: { connect: { id: Number(typeServiceId) } },
                 Provider: { connect: { id: Number(providerId) } },
                 Requester: { connect: { id: requestedId } },
@@ -180,7 +177,6 @@ const listAllSolicitationByRequester = async (request, response) => {
                 const provider = item.Provider;
                 const requester = item.Requester;
 
-                // Buscar endereço de forma assíncrona
                 const adress = await prisma.adress.findFirst({ where: { id: item.adressId } });
 
                 let providerName = '';

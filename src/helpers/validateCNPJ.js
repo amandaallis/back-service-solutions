@@ -1,5 +1,4 @@
 export default function validateCNPJ(cnpj) {
-    // Remove caracteres não numéricos do CNPJ
     cnpj = cnpj.replace(/[^\d]+/g, '');
 
     if (cnpj.length !== 14)

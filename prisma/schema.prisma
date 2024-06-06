@@ -100,7 +100,6 @@ enum StatusRequiredService {
 
 model RequiredServices {
   id                    Int                   @id @default(autoincrement())
-  //TypeServiceList       TypeServiceList?      @relation(fields: [typeServiceId], references: [id])
   ServiceList           ServiceList?          @relation(fields: [typeServiceId], references: [id])
   typeServiceId         Int?
   Provider              Provider?             @relation(fields: [providerId], references: [id])

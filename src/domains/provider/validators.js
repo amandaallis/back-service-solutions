@@ -20,7 +20,6 @@ export const providerPersonal = z.object({
 });
 
 export const loginSchema = z.object({
-//  phone: z.string().refine(value => /^(\(?\d{2}\)?\s)?(\d{4,5}-?\d{4})$/.test(value)),
   password: z.string(),
   phone: z.string().refine(value => /^(\(?\d{2}\)?\s?)?\d{4,5}-?\d{4}$/.test(value)),
 });

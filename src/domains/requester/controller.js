@@ -105,8 +105,6 @@ const loginRequester = async (request, response) => {
         const {phone, password} = loginSchema.parse(request.body);
         const requester = await findRequesterByPhone(phone);
 
-        console.log(requester)
-
         if(!requester) {
             return response.status(404).json({ error: 'Wrong data, try again' });
         }
@@ -134,8 +132,7 @@ const emailRegistered = async (request, response) => {
         const email =  request.query.email;
         
         const exist = await findRequesterByEmail(email);
-        console.log(email)
-    
+            
         if(exist) {
             return response.status(200).json(true);
         } else {
@@ -153,7 +150,6 @@ const phoneRegistered = async (request, response) => {
         const phone =  request.query.phone;
         
         const exist = await findRequesterByPhone(phone);
-        console.log(exist)
     
         if(exist) {
             return response.status(200).json(true);

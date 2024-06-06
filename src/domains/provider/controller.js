@@ -7,10 +7,6 @@ import jwt from "jsonwebtoken";
 const registerNewProvider = async (request, response) => {
     try {
         const type = request.query.type
-
-        console.log("Olha o type que foi solicitado.")
-        console.log(type)
-
         const { email, phone, password, city } = request.body;
 
         const existEmailRegistered = await findProviderByEmail(email);
@@ -27,9 +23,6 @@ const registerNewProvider = async (request, response) => {
         let newProvider;
 
         if (type === "personal") {
-            console.log("Entrou no type personal")
-//            const { cpf, name } = providerPersonal.parse(request.body);
-
         const { cpf, name } = request.body;
 
         const hashedPassword = bcrypt.hashSync(password, 15);
@@ -53,7 +46,6 @@ const registerNewProvider = async (request, response) => {
                 }
             });
         } else if (type === "legal") {
-//            const { cnpj, companyName } = providerLegalSchema.parse(request.body);
             const { cnpj, companyName } = request.body;
             const hashedPassword = bcrypt.hashSync(password, 15);
 
@@ -97,7 +89,6 @@ const registerNewProvider = async (request, response) => {
 
 const loginProvider = async (request, response) => {
     try {
-//        const {password, phone} = loginSchema.parse(request.body);
         const {password, phone} = request.body;
         const provider = await findProviderByPhone(phone);
 
@@ -195,7 +186,7 @@ const getUserInformation = async (req, res) => {
         console.log(error)
     }
 }
-//continuar fazendo updateProviderData
+
 const updateProviderData = async (request, response) => {
     try {
         const {email, password, name, companyName } = userUpdateSchema.parse(request.body);
@@ -222,10 +213,9 @@ const updateProviderData = async (request, response) => {
         }
 
         if(type == "personal") {
-            console.log(name)
             updatedProvider.providerPersonal = {
                 update: {
-                    where: { providerId: providerId }, // Fornecer a condição de atualização
+                    where: { providerId: providerId },
                     data: {
                     name: updatedProvider.name
                     }
